@@ -1,0 +1,6 @@
+{
+    "vetur.format.options.tabSize": 4,
+    "prettier.tabWidth": 4,
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "vetur.experimental.templateInterpolationService": true
+}
