@@ -86,14 +86,8 @@ const methods = {
         if (data.meta.code === 200) {
             let { user } = data.data;
             Mutations.setUserName(user.username);
-            // 默认跳转第一个菜单
-            if (layoutMenuList.length > 0) {
-                if (layoutMenuList[0].children && layoutMenuList[0].children.length > 0) {
-                    router.push({ name: layoutMenuList[0].children[0].name });
-                } else {
-                    router.push({ name: layoutMenuList[0].name });
-                }
-            }
+            console.log("layoutMenuList: ", layoutMenuList);
+             router.push({ name: 'Home/Index' });
         }
     },
 };

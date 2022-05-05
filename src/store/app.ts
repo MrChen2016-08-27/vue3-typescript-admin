@@ -10,7 +10,8 @@ const state = reactive({
 
 export const Getter = {
     getLeftMenuList: computed((): RouterMenu[] => {
-        return state.leftMenuList;
+        let list = List(state.leftMenuList).toJS() as RouterMenu[];
+        return list;
     })
 }
 

@@ -1,8 +1,9 @@
-import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory, RouteLocationNormalized, RouteLocationRaw, useRouter } from 'vue-router'
 import { Component } from 'vue';
 import userApi from "@/api/user";
 import { Getter, Actions } from '@/store/app'
 import Layout from '@/views/layout/Layout.vue'
+import { format } from 'path/posix';
 const Login = () => import('../views/login/Login.vue')
 const Home = () => import('../views/home/Home.vue')
 
@@ -12,11 +13,28 @@ const RoleDetail = () => import('../views/system/RoleDetail.vue')
 const UserList = () => import('../views/system/UserList.vue')
 const UserDetail = () => import('../views/system/UserDetail.vue')
 
+
+
 // 初始化权限和基础数据
-async function initAuthBaseData(to: any, from: any) {
+async function initAuthBaseData(to: RouteLocationNormalized, from: RouteLocationNormalized) {
     await userApi.getAuth();
     await Actions.filterLeftMenus();
+    
 } 
+
+// home/index 如果存在权限菜单则默认跳转到菜单的第一个页面
+async function homeboforeEnter(to: RouteLocationNormalized, from: RouteLocationNormalized) {
+    let menuList = Getter.getLeftMenuList.value;
+    if (menuList && menuList.length > 0) {
+        if (menuList[0].children && menuList[0].children.length > 0) {
+       
+            return <RouteLocationRaw>{
+                name: menuList[0].children[0].name,
+                replace: true
+            }
+        }
+    }
+}
 
 
 
@@ -67,7 +85,8 @@ const otherRouter = [
             {
                 path: 'index',
                 name: 'Home/Index',
-                component: Home
+                component: Home,
+                beforeEnter: [homeboforeEnter]
             }
         ]
     },
