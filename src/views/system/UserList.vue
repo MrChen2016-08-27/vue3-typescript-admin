@@ -6,7 +6,7 @@
         </div>
         <div>
             <label>手机号码</label>
-            <el-input v-model="state.params.mobile" class="input-text"></el-input>
+            <el-input v-model="state.params.tel" class="input-text"></el-input>
         </div>
     </div>
     <div>
@@ -19,9 +19,9 @@
         <el-table :data="state.dataList" style="width: 100%">
             <el-table-column prop="username" label="用户名" min-width="100">
             </el-table-column>
-            <el-table-column prop="mobile" label="手机账号" min-width="100">
+            <el-table-column prop="tel" label="手机账号" min-width="100">
             </el-table-column>
-            <el-table-column prop="nickname" label="昵称"> </el-table-column>
+            <el-table-column prop="name" label="姓名"> </el-table-column>
             <el-table-column prop="role" label="角色" min-width="100">
                 <template #default="scope">
                     <el-tag

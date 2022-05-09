@@ -7,7 +7,7 @@
         :model="state.form"
     >
         <el-row :gutter="20">
-            <el-col :span="12">
+            <el-col :span="6">
                 <el-form-item label="用户名" prop="username">
                     <el-input
                         :readonly="computeds.isReadonly.value"
@@ -15,7 +15,7 @@
                     ></el-input>
                 </el-form-item>
             </el-col>
-            <el-col v-if="!props.id" :span="12" prop="password">
+            <el-col v-if="!props.id" :span="6" prop="password">
                 <el-form-item label="密码">
                     <el-input
                         show-password
@@ -24,27 +24,27 @@
                     ></el-input>
                 </el-form-item>
             </el-col>
-            <el-col :span="12">
-                <el-form-item label="昵称">
+            <el-col :span="6">
+                <el-form-item label="姓名">
                     <el-input
                         :readonly="computeds.isReadonly.value"
-                        v-model="state.form.nickname"
+                        v-model="state.form.name"
                     ></el-input>
                 </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="6">
                 <el-form-item label="联系电话">
                     <el-input
                         :readonly="computeds.isReadonly.value"
-                        v-model="state.form.mobile"
+                        v-model="state.form.tel"
                     ></el-input>
                 </el-form-item>
             </el-col>
             <el-col :span="24">
                 <el-form-item label="角色">
-                    <el-checkbox-group :disabled="computeds.isReadonly.value" v-model="state.roleIds">
+                    <el-checkbox-group :disabled="computeds.isReadonly.value" v-model="roleService.roleIds">
                         <el-checkbox
-                            v-for="role in state.roleList"
+                            v-for="role in roleService.roleList"
                             :key="role.id"
                             :label="role.id"
                             >{{ role.name }}</el-checkbox
@@ -96,17 +96,33 @@ const route = useRoute();
 const state = reactive({
     form: {
         username: "",
-        nickname: "",
+        name: "",
         password: "",
-        mobile: null,
+        tel: null,
     },
     imgList: <any>[],
-    roleList: <any>[],
-    roleIds: [],
 });
 
+// 角色业务
+let roleService = reactive({
+    roleList: <any>[],
+    roleIds: <any>[]
+});
+const roleMethods = {
+    async getRoleList() {
+        let { data } = await roleApi.getRoleList({
+            pageNumber: 1,
+            pageSize: 10,
+        });
+        roleService.roleList = data.data.list;
+    },
+    setRoleIdsByRoleList(roleList: []) {
+        roleService.roleIds = roleList.map((item: any) => item.id);
+    }
+};
+
 onMounted(() => {
-    methods.getRoleList();
+    roleMethods.getRoleList();
     if (props.id) {
         methods.getDetail(props.id);
     }
@@ -125,19 +141,12 @@ const methods = {
             }
         }
         if (data.data.roles) {
-            state.roleIds = data.data.roles.map((item: any) => item.id);
+            roleMethods.setRoleIdsByRoleList(data.data.roles);
         }
-    },
-    async getRoleList() {
-        let { data } = await roleApi.getRoleList({
-            pageNumber: 1,
-            pageSize: 10,
-        });
-        state.roleList = data.data.list;
     },
     async submitForm() {
         let form = Map(state.form).toJS();
-        form.roleIds = List(state.roleIds).toJS();
+        form.roleIds = List(roleService.roleIds).toJS();
         if (state.imgList.length > 0) {
             form.avatar = state.imgList[0];
         }

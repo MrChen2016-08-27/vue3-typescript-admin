@@ -13,25 +13,20 @@
             @reset="methods.resetList()"
         ></TableHeader>
         <el-table :data="state.dataList" style="width: 100%">
-            <el-table-column prop="name" label="角色名称" min-width="100">
-            </el-table-column>
+            <el-table-column prop="name" label="角色名称" min-width="100"></el-table-column>
             <el-table-column prop="action" label="操作" width="220">
                 <template #default="scope">
-                    <el-button size="mini" @click="methods.viewDetail(scope.row.id, 1)"
-                        >查看</el-button
-                    >
+                    <el-button size="mini" @click="methods.viewDetail(scope.row.id, 1)">查看</el-button>
                     <el-button
                         size="mini"
                         type="primary"
                         @click="methods.viewDetail(scope.row.id)"
-                        >编辑</el-button
-                    >
+                    >编辑</el-button>
                     <el-button
                         size="mini"
                         type="danger"
                         @click="methods.viewDeleteAction(scope.row)"
-                        >删除</el-button
-                    >
+                    >删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -45,8 +40,7 @@
                 :page-size="state.params.pageSize"
                 layout="total, prev, pager, next"
                 :total="state.total"
-            >
-            </el-pagination>
+            ></el-pagination>
         </div>
     </div>
     <del-modal
@@ -60,7 +54,7 @@
         <el-form
             ref="formRef"
             :model="state.form"
-            :rules="computeds.getFormRules"
+            :rules="computeds.getFormRules.value"
             label-width="80px"
         >
             <el-form-item label="角色名称" prop="name">
@@ -70,9 +64,7 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="state.dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="methods.submitForm()"
-                    >确 定</el-button
-                >
+                <el-button type="primary" @click="methods.submitForm()">确 定</el-button>
             </span>
         </template>
     </el-dialog>
@@ -118,12 +110,12 @@ const state = reactive({
 
 const getFormRules = {
     name: [
-                {
-                    required: true,
-                    message: "请输入角色名称",
-                    trigger: "blur",
-                },
-            ],
+        {
+            required: true,
+            message: "请输入角色名称",
+            trigger: "blur",
+        },
+    ],
 }
 
 const computeds = {

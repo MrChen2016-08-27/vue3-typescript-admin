@@ -67,10 +67,10 @@
         </el-card>
     </div>
     <div class="page-action-footer">
-        <el-button v-if="!computeds.isReadonly" type="primary">确认</el-button>
+        <el-button v-if="!computeds.isReadonly.value" type="primary">确认</el-button>
         <el-button @click="$back()">
             {{
-                computeds.isReadonly ? "返回" : "取消"
+                computeds.isReadonly.value ? "返回" : "取消"
             }}
         </el-button>
     </div>
