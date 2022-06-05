@@ -1,35 +1,44 @@
 <template>
     <el-container class="layout-container">
-        <el-aside class="left-menu-container" width="200px">
-            <el-menu
-                :default-openeds="computeds.oepnNames.value"
-                background-color="#545c64"
-                text-color="#fff"
-                active-text-color="#ffd04b"
-                :default-active="computeds.activeName.value"
-                
-            >
-    
-                <el-submenu v-for="item in leftMenuList" :key="item.name" :index="item.name">
-                    <template #title
-                        ><i class="el-icon-message"></i>{{ item.title }}</template
-                    >
-                    <el-menu-item v-for="child in item.children" @click="methods.goMenuRouter(child.name)" :key="child.name" :index="child.meta.menuKey">{{ child.title }}</el-menu-item>
-                </el-submenu>
-            </el-menu>
-        </el-aside>
+        <el-menu :collapse="isCollapse" :default-openeds="computeds.oepnNames.value" background-color="#333333"
+            text-color="#fff" active-text-color="#ffd04b" :default-active="computeds.activeName.value">
+
+            <el-sub-menu v-for="item in leftMenuList" :key="item.name" :index="item.name">
+                <template #title>
+                    <el-icon>
+                        <Menu />
+                    </el-icon>
+                    <span>{{ item.title }}</span>
+                </template>
+                <el-menu-item v-for="child in item.children" @click="methods.goMenuRouter(child.name)" :key="child.name"
+                    :index="child.meta.menuKey">{{ child.title }}</el-menu-item>
+            </el-sub-menu>
+        </el-menu>
+
 
         <el-container class="layout-content-container">
-            <el-header style="text-align: right; font-size: 12px">
-                <el-dropdown>
-                    <i class="el-icon-setting" style="margin-right: 15px"></i>
-                    <template #dropdown>
-                        <el-dropdown-menu>
-                            <el-dropdown-item @click="methods.logout()" >注销</el-dropdown-item>
-                        </el-dropdown-menu>
-                    </template>
-                </el-dropdown>
-                <span>{{ getUserName }}</span>
+            <el-header>
+                <div class="layout-right-menu-header">
+                    <div style="justify-content: flex-start;">
+                        <el-icon @click="methods.changeCollapsae">
+                            <ArrowRightBold v-show="isCollapse" />
+                            <ArrowLeftBold v-show="!isCollapse" />
+                        </el-icon>
+                    </div>
+                    <div style="justify-content: flex-end;">
+                        <el-dropdown>
+                            <el-icon :size="20" color="#333333" style="margin-right: 15px">
+                                <Setting />
+                            </el-icon>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item @click="methods.logout()">注销</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                        <span>{{ getUserName }}</span>
+                    </div>
+                </div>
             </el-header>
             <el-main>
                 <router-view></router-view>
@@ -39,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
 
 import userApi from "@/api/user";
@@ -54,7 +63,7 @@ const leftMenuList = Getter.getLeftMenuList.value;
 const route = useRoute();
 const router = useRouter();
 
-
+const isCollapse = ref(false);
 
 onMounted(() => {
     console.log('loading success..');
@@ -86,16 +95,16 @@ const computeds = {
         return '';
     }),
     oepnNames: computed(() => {
-    
 
-  
+
+
         return route.name!.toString().split("/");
     })
 }
 
 const methods = {
     goMenuRouter(routeName: string) {
-        router.push({ name: routeName  });
+        router.push({ name: routeName });
     },
     async logout() {
         const res = await userApi.logout();
@@ -105,6 +114,9 @@ const methods = {
             router.push("/login");
         }
     },
+    changeCollapsae() {
+        isCollapse.value = !isCollapse.value;
+    }
 }
 
 
@@ -126,19 +138,55 @@ const methods = {
 </style>
 
 <style lang="less" scoped>
-.layout-container{
+@color-1: #333333;
+
+.layout-left-bg-color {
+    background-color: @color-1;
+}
+
+.layout-container {
     height: 100%;
 
 }
-.left-menu-container{
+
+.left-menu-container {
     position: relative;
     min-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    background-color: #545c64;
+    background-color: @color-1;
 }
-.layout-content-container{
+
+.layout-content-container {
     position: relative;
     overflow-y: auto;
+}
+
+.layout-right-menu-header {
+    display: flex;
+ 
+    align-items: center;
+    color: #333333;
+    cursor: default;
+    >div{
+        display: flex;
+        align-items: center;
+        position: relative;
+        flex: 1;
+    }
+}
+
+.el-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #cccccc;
+}
+
+.el-menu-item {
+    transition: 0.3s all;
+
+    &:hover {
+        background-color: #666666;
+
+    }
 }
 </style>

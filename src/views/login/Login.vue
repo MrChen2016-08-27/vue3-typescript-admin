@@ -42,9 +42,11 @@ import { ElForm as ElementUIForm, ElNotification } from "element-plus";
 import {
     useRouter,
 } from "vue-router";
+
 const router = useRouter();
 const formRef = ref<InstanceType<typeof ElementUIForm>>();
 const layoutMenuList = AppGetter.getLeftMenuList.value;
+
 const state = reactive({
     form: {
         username: "",
@@ -78,16 +80,11 @@ const methods = {
         });
     },
     loginUser: async () => {
-        // if (!this.myEncrypt) {
-        //     return;
-        // }
-        // const password = this.myEncrypt.encrypt(this.form.password);
         let { data } = await login(state.form);
         if (data.meta.code === 200) {
             let { user } = data.data;
             Mutations.setUserName(user.username);
-            console.log("layoutMenuList: ", layoutMenuList);
-             router.push({ name: 'Home/Index' });
+            router.push({ name: 'Home/Index' });
         }
     },
 };

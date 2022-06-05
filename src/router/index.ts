@@ -2,6 +2,8 @@ import { createRouter, createWebHashHistory, createWebHistory, RouteLocationNorm
 import { Component } from 'vue';
 import userApi from "@/api/user";
 import { Getter, Actions } from '@/store/app'
+import { Actions as UserActions } from '@/store/user'
+
 import Layout from '@/views/layout/Layout.vue'
 import { format } from 'path/posix';
 const Login = () => import('../views/login/Login.vue')
@@ -13,11 +15,14 @@ const RoleDetail = () => import('../views/system/RoleDetail.vue')
 const UserList = () => import('../views/system/UserList.vue')
 const UserDetail = () => import('../views/system/UserDetail.vue')
 
+const OrgList = () => import('../views/system/OrgList.vue')
+
 
 
 // 初始化权限和基础数据
 async function initAuthBaseData(to: RouteLocationNormalized, from: RouteLocationNormalized) {
     await userApi.getAuth();
+    await UserActions.getUserinitInfo();
     await Actions.filterLeftMenus();
     
 } 
@@ -131,6 +136,16 @@ export const appRouter = <RouterMenu []>[
         beforeEnter: [initAuthBaseData],
         id: '1',
         children: [
+            {
+                path: 'orgList',
+                name: 'System/OrgList',
+                component: OrgList,
+                id: '2',
+                title: '组织架构',
+                meta: {
+                    menuKey: 'Org'
+                }
+            },
             {
                 path: 'roleList',
                 name: 'System/RoleList',

@@ -3,6 +3,7 @@ import {  appRouter } from '@/router';
 import { reactive, computed } from 'vue';
 import { List } from 'immutable'
 import { RouterMenu } from '../router/index';
+import { Actions as UserActions, Getter as UserGetter } from './user';
 
 const state = reactive({
     leftMenuList: <RouterMenu[]>[],
@@ -24,8 +25,8 @@ export const Mutations = {
 export const Actions = {
     filterLeftMenus: async () => {
         const list = List(appRouter).toJS();
-        const res = await getTokenUser()
-        const { menus } = res.data.data
+        const menus = UserGetter.getUserMenus.value;
+        console.log('state.userMenus', menus);
         const leftMenus = filterMenus(list, menus)
         Mutations.setLeftMenuList(leftMenus);
 

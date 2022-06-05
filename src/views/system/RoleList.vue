@@ -6,57 +6,29 @@
         </div>
     </div>
     <div>
-        <TableHeader
-            v-model:keyword="state.keyword"
-            @search="methods.searchList()"
-            @add-action="methods.viewAddModal()"
-            @reset="methods.resetList()"
-        ></TableHeader>
+        <TableHeader v-model:keyword="state.keyword" @search="listMethods.searchList()"
+            @add-action="methods.viewAddModal()" @reset="listMethods.resetList()"></TableHeader>
         <el-table :data="state.dataList" style="width: 100%">
             <el-table-column prop="name" label="角色名称" min-width="100"></el-table-column>
-            <el-table-column prop="action" label="操作" width="220">
+            <el-table-column prop="action" label="操作" width="240">
                 <template #default="scope">
-                    <el-button size="mini" @click="methods.viewDetail(scope.row.id, 1)">查看</el-button>
-                    <el-button
-                        size="mini"
-                        type="primary"
-                        @click="methods.viewDetail(scope.row.id)"
-                    >编辑</el-button>
-                    <el-button
-                        size="mini"
-                        type="danger"
-                        @click="methods.viewDeleteAction(scope.row)"
-                    >删除</el-button>
+                    <el-button @click="methods.viewDetail(scope.row.id, 1)">查看</el-button>
+                    <el-button type="primary" @click="methods.viewDetail(scope.row.id)">编辑</el-button>
+                    <el-button type="danger" @click="methods.viewDeleteAction(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="page-footer">
-            <el-pagination
-                background
-                @size-change="methods.changePageSize"
-                @current-change="methods.changeCurrentPage"
-                v-model:currentPage="state.params.pageNumber"
-                :page-sizes="state.pageSizes"
-                :page-size="state.params.pageSize"
-                layout="total, prev, pager, next"
-                :total="state.total"
-            ></el-pagination>
+            <el-pagination background @size-change="listMethods.changePageSize"
+                @current-change="listMethods.changeCurrentPage" v-model:currentPage="state.params.pageNumber"
+                :page-sizes="state.pageSizes" :page-size="state.params.pageSize" layout="total, prev, pager, next"
+                :total="state.total"></el-pagination>
         </div>
     </div>
-    <del-modal
-        v-model="state.delShow"
-        :delId="state.selectItem.id"
-        :delName="state.selectItem.username"
-        :deleteMethod="methods.deleteRole"
-        @deleteSuccess="methods.resetList()"
-    ></del-modal>
+    <del-modal v-model="state.delShow" :delId="state.selectItem.id" :delName="state.selectItem.username"
+        :deleteMethod="methods.deleteRole" @deleteSuccess="listMethods.resetList()"></del-modal>
     <el-dialog title="提示" v-model="state.dialogVisible" width="35%">
-        <el-form
-            ref="formRef"
-            :model="state.form"
-            :rules="computeds.getFormRules.value"
-            label-width="80px"
-        >
+        <el-form ref="formRef" :model="state.form" :rules="computeds.getFormRules.value" label-width="80px">
             <el-form-item label="角色名称" prop="name">
                 <el-input type="text" v-model="state.form.name"></el-input>
             </el-form-item>
@@ -135,7 +107,7 @@ const computeds = {
 
 
 const methods = {
-    ...listMethods,
+
     deleteRole: roleApi.deleteRole,
     viewDeleteAction(row: any) {
         state.selectItem = reactive(row);

@@ -10,12 +10,8 @@
         </div>
     </div>
     <div>
-        <TableHeader
-            v-model:keyword="state.keyword"
-            @search="methods.searchList()"
-            @add-action="methods.viewDetail()"
-            @reset="methods.resetList()"
-        ></TableHeader>
+        <TableHeader v-model:keyword="state.keyword" @search="methods.searchList()" @add-action="methods.viewDetail()"
+            @reset="methods.resetList()"></TableHeader>
         <el-table :data="state.dataList" style="width: 100%">
             <el-table-column prop="username" label="用户名" min-width="100">
             </el-table-column>
@@ -24,55 +20,26 @@
             <el-table-column prop="name" label="姓名"> </el-table-column>
             <el-table-column prop="role" label="角色" min-width="100">
                 <template #default="scope">
-                    <el-tag
-                        v-for="role in scope.row.roles"
-                        :key="role.id"
-                        type="info"
-                        >{{ role.name }}</el-tag
-                    >
+                    <el-tag v-for="role in scope.row.roles" :key="role.id" type="info">{{ role.name }}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="action" label="操作" width="220">
+            <el-table-column prop="action" label="操作" width="240">
                 <template #default="scope">
-                    <el-button size="mini" @click="methods.viewDetail(scope.row.id, 1)"
-                        >查看</el-button
-                    >
-                    <el-button
-                        size="mini"
-                        type="primary"
-                        @click="methods.viewDetail(scope.row.id)"
-                        >编辑</el-button
-                    >
-                    <el-button
-                        size="mini"
-                        type="danger"
-                        @click="methods.viewDeleteAction(scope.row)"
-                        >删除</el-button
-                    >
+                    <el-button @click="methods.viewDetail(scope.row.id, 1)">查看</el-button>
+                    <el-button type="primary" @click="methods.viewDetail(scope.row.id)">编辑</el-button>
+                    <el-button type="danger" @click="methods.viewDeleteAction(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="page-footer">
-            <el-pagination
-                background
-                @size-change="methods.changePageSize"
-                @current-change="methods.changeCurrentPage"
-                v-model:currentPage="state.params.pageNumber"
-                :page-sizes="state.pageSizes"
-                :page-size="state.params.pageSize"
-                layout="total, prev, pager, next"
-                :total="state.total"
-            >
+            <el-pagination background @size-change="methods.changePageSize" @current-change="methods.changeCurrentPage"
+                v-model:currentPage="state.params.pageNumber" :page-sizes="state.pageSizes"
+                :page-size="state.params.pageSize" layout="total, prev, pager, next" :total="state.total">
             </el-pagination>
         </div>
     </div>
-    <del-modal
-        v-model="state.delShow"
-        :delId="state.selectItem.id"
-        :delName="state.selectItem.username"
-        :deleteMethod="methods.deleteUser"
-        @deleteSuccess="methods.resetList()"
-    ></del-modal>
+    <del-modal v-model="state.delShow" :delId="state.selectItem.id" :delName="state.selectItem.username"
+        :deleteMethod="methods.deleteUser" @deleteSuccess="methods.resetList()"></del-modal>
 </template>
 
 <script setup lang="ts">
@@ -80,6 +47,7 @@ import listActionModule from "../../composables/listActionModule";
 import DelModal from "@/components/DelModal.vue";
 import TableHeader from "@/components/TableHeader.vue";
 import DateFilter from "@/components/DateFilter.vue";
+
 import userApi from "@/api/user";
 import { reactive, nextTick, defineComponent, toRefs } from "vue";
 import { useRouter } from "vue-router";
@@ -87,7 +55,7 @@ import { useRouter } from "vue-router";
 const {
     listData,
     listMethods
-}= listActionModule(userApi.getUserList);
+} = listActionModule(userApi.getUserList);
 
 const router = useRouter();
 
@@ -95,6 +63,7 @@ const state = reactive({
     ...toRefs(listData),
     delShow: false,
     selectItem: <any>{},
+
 });
 
 const methods = {
