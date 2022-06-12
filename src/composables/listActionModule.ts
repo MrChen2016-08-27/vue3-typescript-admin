@@ -28,10 +28,8 @@ export default function listActionModule(requesstMethods: (params: ListParamsSta
         keyword: ''
     };
 
-    if (extraParameter) {
-        baseParams = Object.assign(baseParams, extraParameter);
-    }
     let params: ListParamsStandard = reactive(baseParams);
+    
     
     let dataList: Ref<any[]> = ref([]);
 
@@ -40,6 +38,12 @@ export default function listActionModule(requesstMethods: (params: ListParamsSta
      */
     const getList = async (): Promise<void> => {
         loading.value = true;
+        if (extraParameter) {
+            params = reactive({
+                ...baseParams,
+                ...toRefs(extraParameter)
+            })
+        }
         fileterNullParams(params);
         const res: AxiosResponse = await requesstMethods(params);
         let data = res.data;
