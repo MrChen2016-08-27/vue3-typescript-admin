@@ -1,6 +1,6 @@
 
 import axios, { AxiosResponse } from 'axios'
-import { ref, reactive, onMounted, Ref } from 'vue'
+import { ref, reactive, onMounted, Ref, toRefs } from 'vue'
 import { ListParamsStandard } from '@/standard';
 
 
@@ -95,6 +95,7 @@ export default function listActionModule(requesstMethods: (params: ListParamsSta
     onMounted(() => {
         getList();
     });
+
     
     const result: ListActionModuleStandard = {
         listData: {
@@ -127,7 +128,7 @@ export interface ListActionModuleStandard {
 interface ListDataStandard {
     dataList: Ref<any[]>,
     params: ListParamsStandard,
-    keyword: Ref<string | null | number>,
+    keyword: Ref<string | null>,
     readonly pageSizes: number[],
     total: Ref<number>,
 }

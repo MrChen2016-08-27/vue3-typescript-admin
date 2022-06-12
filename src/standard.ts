@@ -19,6 +19,17 @@ export interface ListParamsStandard {
     [attr: string]: any
 };
 
+/**
+ * 详情页面参数传递标准
+ */
+ export interface DetailQueryStandard{
+    // id
+    id?: number | string;
+    // 是否只读, 1 只读， 0或者null或者''为可写
+    readonly?: number;
+    // 其余参数
+    [attr: string]: any;
+}
 
 
 
