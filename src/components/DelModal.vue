@@ -22,7 +22,7 @@ const visibleState = reactive({
 });
 
 interface PropsInterface {
-    delId: number | null,
+    delId?: number | null,
     deleteRequestMethod: (id: number | string) => Promise<any>,
     modelValue: boolean
 }

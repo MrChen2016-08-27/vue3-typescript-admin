@@ -1,5 +1,4 @@
 <template>
-    <!-- :rules="computeds.getFormRules" -->
     <el-form ref="formRef" :rules="getFormRules" label-width="80px" :model="userState.form">
         <el-row :gutter="20">
             <el-col :span="6">
@@ -60,15 +59,14 @@ import userApi from "@/api/user";
 
 import {
     reactive,
-    defineComponent,
     onMounted,
     ref,
     computed,
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Map, List } from "immutable";
+import { fromJS } from "immutable";
 import { ElForm as ElementUIForm } from "element-plus";
-import UploadFile from "@/components/UploadFile.vue3.vue";
+import UploadFile from "@/components/UploadFile.vue";
 import SelectOrgModalVue from "@/components/SelectOrgModal.vue";
 import { OrgInterface } from "@/components/SelectOrgTree.vue";
 
@@ -185,8 +183,8 @@ function userService() {
     });
     // 提交用户信息表单
     async function submitForm() {
-        let form = Map(state.form).toJS();
-        form.roleIds = List(roleState.roleIds).toJS();
+        let form: any = fromJS(state.form).toJS();
+        form.roleIds = fromJS(roleState.roleIds).toJS();
         if (state.imgList.length > 0) {
             form.avatar = state.imgList[0];
         }
@@ -232,13 +230,13 @@ const isReadonly = computed(() => {
 
 
 
+interface PropsInterface {
+    id?: number | string | null
+}
 
 
 
-
-const props = defineProps({
-    id: [Number, String],
-});
+const props = defineProps<PropsInterface>();
 
 
 </script>
