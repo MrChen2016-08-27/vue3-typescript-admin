@@ -1,17 +1,13 @@
 <template>
 
-    <el-dialog
-        title="操作提示"
-        :model-value="modelValue"
-        @update:modelValue="(val: boolean) => changeModalVisible(val)"
-        width="40%"
-    >
+    <el-dialog title="操作提示" :model-value="modelValue" @update:modelValue="(val: boolean) => changeModalVisible(val)"
+        width="40%">
         <label>即将删除&nbsp;{{ visibleState.delActionName }}&nbsp;</label>
         <p>您是否要删除?</p>
         <template #footer>
             <span class="dialog-footer">
-            <el-button :loading="visibleState.delLoading" @click="changeModalVisible(false)">取 消</el-button>
-            <el-button type="danger" :loading="visibleState.delLoading" @click="deleteRow">确 定</el-button>
+                <el-button :loading="visibleState.delLoading" @click="changeModalVisible(false)">取 消</el-button>
+                <el-button type="danger" :loading="visibleState.delLoading" @click="deleteRow">确 定</el-button>
             </span>
         </template>
     </el-dialog>
@@ -26,8 +22,8 @@ const visibleState = reactive({
 });
 
 interface PropsInterface {
-    delId: number,
-    deleteRequestMethod: Function,
+    delId: number | null,
+    deleteRequestMethod: (id: number | string) => Promise<any>,
     modelValue: boolean
 }
 
@@ -38,9 +34,12 @@ const emit = defineEmits<{
 }>();
 
 const deleteRow = async () => {
-    visibleState.delLoading = true;
-    await props.deleteRequestMethod(props.delId);
-    visibleState.delLoading = false;
+    if (props.delId) {
+        visibleState.delLoading = true;
+        await props.deleteRequestMethod(props.delId!);
+        visibleState.delLoading = false;
+
+    }
 }
 
 const changeModalVisible = async (value: boolean) => {

@@ -39,7 +39,7 @@
         </div>
     </div>
     <del-modal v-model="state.delShow" :delId="state.selectItem.id" :delName="state.selectItem.username"
-        :deleteMethod="methods.deleteUser" @deleteSuccess="methods.resetList()"></del-modal>
+        :deleteRequestMethod="methods.deleteUser" @deleteSuccess="methods.resetList()"></del-modal>
 </template>
 
 <script setup lang="ts">

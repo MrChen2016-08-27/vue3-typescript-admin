@@ -26,7 +26,7 @@
         </div>
     </div>
     <del-modal v-model="state.delShow" :delId="state.selectItem.id" :delName="state.selectItem.username"
-        :deleteMethod="methods.deleteRole" @deleteSuccess="listMethods.resetList()"></del-modal>
+        :deleteRequestMethod="methods.deleteRole" @deleteSuccess="listMethods.resetList()"></del-modal>
     <el-dialog title="提示" v-model="state.dialogVisible" width="35%">
         <el-form ref="formRef" :model="state.form" :rules="computeds.getFormRules.value" label-width="80px">
             <el-form-item label="角色名称" prop="name">
