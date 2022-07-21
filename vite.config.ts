@@ -1,31 +1,31 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import path = require('path');
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import path = require("path");
 
-function resolve (dir) {
-  return path.join(__dirname, dir)
+function resolve(dir) {
+    return path.join(__dirname, dir);
 }
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    port: 8000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
+    // 防止打包后出现资源404，相当于vue2的 assetsPublicPath: "./"
+    base: "./",
+    server: {
+        port: 8000,
+        proxy: {
+            "/api": {
+                target: "http://localhost:3000",
+                changeOrigin: true,
+            },
+        },
+        fs: {
+            allow: ["."],
+        },
     },
-    fs: {
-
-      allow: ['.']
-    }
-  },
-  resolve: {
-    alias: {
-      "@": resolve("src"),
-    }
-  },
-  plugins: [vue()],
-  
-})
+    resolve: {
+        alias: {
+            "@": resolve("src"),
+        },
+    },
+    plugins: [vue()],
+});

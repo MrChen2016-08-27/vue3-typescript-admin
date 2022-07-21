@@ -9,9 +9,7 @@
       "resolveJsonModule": true,
       "esModuleInterop": true,
       "lib": ["esnext", "dom"],
-      "compilerOptions": {
-        "type": ["element-plus/global"]
-      },
+      "types": ["element-plus/global"],
       "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"]
