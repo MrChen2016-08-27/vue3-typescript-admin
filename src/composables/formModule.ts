@@ -1,4 +1,5 @@
 import { reactive } from "vue";
+import { fromJS } from "immutable";
 
 export default function () {
     let formActionState = reactive({
@@ -13,8 +14,8 @@ export default function () {
         formActionState.timer = setTimeout(async () => {
             try {
                 await callback();
-            } catch(e) {
-                console.log('submit action error:', e);
+            } catch (e) {
+                console.log("submit action error:", e);
             } finally {
                 clearTimeout(formActionState.timer);
                 formActionState.loading = false;
@@ -27,25 +28,24 @@ export default function () {
     };
 }
 
-
 export const deleteService = () => {
     interface DeleteDataInterface {
-        id: number,
-        [attr: string]: any
-    };
-    let deleteServiceState = {
+        id: number;
+        [attr: string]: any;
+    }
+    let deleteServiceState = reactive({
         delShow: false,
         deleteRow: <DeleteDataInterface>{
-            id: -1
-        }
-    }
+            id: -1,
+        },
+    });
 
     function viewDeleteAction(delRow: any) {
-       deleteServiceState.selectRow = fromJS(delRow).toJS();
-       deleteServiceState.delShow = true;
+        deleteServiceState.selectRow = fromJS(delRow).toJS();
+        deleteServiceState.delShow = true;
     }
     return {
         deleteServiceState,
-        viewDeleteAction
-    }
-}
+        viewDeleteAction,
+    };
+};
