@@ -2,13 +2,13 @@
     <div class="select-header">
         <div>
             <label>角色名称</label>
-            <el-input v-model="state.params.name" class="input-text"></el-input>
+            <el-input v-model="listData.params.name" class="input-text"></el-input>
         </div>
     </div>
     <div>
-        <TableHeader v-model:keyword="state.keyword" @search="listMethods.searchList()"
+        <TableHeader v-model:keyword="listData.keyword" @search="listMethods.searchList()"
             @add-action="methods.viewAddModal()" @reset="listMethods.resetList()"></TableHeader>
-        <el-table :data="state.dataList" style="width: 100%">
+        <el-table :data="listData.dataList" style="width: 100%">
             <el-table-column prop="name" label="角色名称" min-width="100"></el-table-column>
             <el-table-column prop="action" label="操作" width="240">
                 <template #default="scope">
@@ -20,9 +20,9 @@
         </el-table>
         <div class="page-footer">
             <el-pagination background @size-change="listMethods.changePageSize"
-                @current-change="listMethods.changeCurrentPage" v-model:currentPage="state.params.pageNumber"
-                :page-sizes="state.pageSizes" :page-size="state.params.pageSize" layout="total, prev, pager, next"
-                :total="state.total"></el-pagination>
+                @current-change="listMethods.changeCurrentPage" v-model:currentPage="listData.params.pageNumber"
+                :page-sizes="listData.pageSizes" :page-size="listData.params.pageSize" layout="total, prev, pager, next"
+                :total="listData.total"></el-pagination>
         </div>
     </div>
     <del-modal v-model="state.delShow" :delId="state.selectItem.id" :delName="state.selectItem.username"
@@ -77,7 +77,6 @@ const state = reactive({
     form: {
         name: "",
     },
-    ...toRefs(listData)
 });
 
 const getFormRules = {

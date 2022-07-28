@@ -9,14 +9,13 @@
         <div class="up-btn-left-inline">
             <slot name="left-inline"></slot>
         </div>
-
         <el-upload :data="exParams" style="display: inline-block;" :loading="loading" :action="getUploadFileUrl"
             :on-success="uploadSuccess" :before-upload="beforeUpload" :show-file-list="false" v-if="!disabled"
             :headers="getHttpHeader">
             <el-button ref="uploadBtn" icon="el-icon-upload">{{ getName }}</el-button>
         </el-upload>
         <div v-if="props.type == 'image'" class="upload-img-list">
-            <div v-for="fileUrl in modelValue" :key="fileUrl" class="up-img-box">
+            <div v-for="fileUrl in getFileList" :key="fileUrl" class="up-img-box">
                 <img :src="`${FILE_SERVER}${fileUrl}`" />
                 <div class="img-mask">
                     <i @click="viewImg(fileUrl)" class="mask-action-btn">
@@ -34,7 +33,7 @@
         </div>
         <div v-if="props.type == 'file'" class="upload-file-list">
             <ul>
-                <li v-for="fileUrl in modelValue" :key="fileUrl">
+                <li v-for="fileUrl in getFileList" :key="fileUrl">
                     <a target="_blank" :href="`${FILE_SERVER}${fileUrl}`">{{ fileUrl }}</a>
                 </li>
             </ul>
@@ -94,12 +93,10 @@ let upSuccess1 = true;
 
 interface exParamsInterface {
     uploadReqTime: Date | null,
-    bigFileMark: string | null
 }
 // 额外的参数
 let exParams: exParamsInterface = {
     uploadReqTime: null,
-    bigFileMark: null
 };
 
 const beforeUpload = (rawFile: UploadRawFile) => {
@@ -127,18 +124,37 @@ const beforeUpload = (rawFile: UploadRawFile) => {
 
 
 const handlerSuccess = async (filePath: string) => {
-    if (props.modelValue && props.modelValue instanceof Array) {
-
+    let fList: string[] = [];
+    // 如果传入的是数组，则返回数组，如果传入的是字符串格式，则返回字符串类型
+    let isReturnArray = props.modelValue instanceof Array;
+    let resultList: string | string[] = "";
+    if (props.modelValue) {
         if (props.maxTotal == 1) {
-            emit('update:modelValue', [filePath]);
+            // 最大值为1, 替换原来那个
+            fList = [filePath];
+            resultList = isReturnArray ? fList : JSON.stringify(fList);
         } else if (props.maxTotal > props.modelValue.length) {
-            let fList: string[] = fromJS(props.modelValue).toJS() as string[];
-            fList.push(filePath);
-            emit('update:modelValue', fList);
+            // 小于最大值限制，新增
+            let fList: string[] = [];
+            if (isReturnArray) {
+                // 传入的为数组则返回数组类型
+                fList = fromJS(props.modelValue).toJS() as string[];
+                fList.push(filePath);
+                resultList = fList;
+            } else {
+                // 传入的是字符类型，则返回字符类型
+                fList = JSON.parse(props.modelValue as string);
+                fList.push(filePath);
+                resultList = JSON.stringify(fList);
+            }
         } else {
-            ElMessage.error("已达到上传上限数量，请删除后再上传");
+            return ElMessage.error("已达到上传上限数量，请删除后再上传");
         }
+    } else {
+        // 如果为空或者空字符, 返回字符类型
+        resultList = JSON.stringify([filePath]);
     }
+    emit('update:modelValue', resultList);
 }
 
 // 上传请求成功时
@@ -156,8 +172,13 @@ function viewImg(fileUrl: string) {
 // 删除文件
 const removeFile = async (fileUrl: string) => {
     if (!props.disabled) {
-        let fList: string[] = getFileList.value;
+        let fList: string[] | string = getFileList.value;
         fList = fList.filter(url => url != fileUrl);
+        // 如果传入的是数组，则返回数组，如果传入的是字符串格式，则返回字符串类型
+        let isReturnArray = props.modelValue instanceof Array;
+        if (!isReturnArray) {
+            fList = JSON.stringify(fList);
+        }
         emit('update:modelValue', fList);
     }
 };
@@ -171,7 +192,7 @@ const getHttpHeader = computed(() => {
 
 // 返回一个新的文件数组，如果是字符串会自动转换为数组
 const getFileList = computed((): string[] => {
-    if (props.modelValue instanceof String) {
+    if (typeof props.modelValue == 'string' && props.modelValue) {
         return JSON.parse(props.modelValue as string);
     }
     if (props.modelValue instanceof Array) {
@@ -182,18 +203,17 @@ const getFileList = computed((): string[] => {
 
 interface PropsInterface {
 
-    maxTotal: number,
+    maxTotal?: number,
     modelValue: string[] | string,
     type: 'image' | 'file',
-    disabled: boolean,
-    setName: string,
+    disabled?: boolean,
+    setName?: string,
     // maxFileSize 单个文件大小限制，单位 kb
-    maxFileSize: number
+    maxFileSize?: number
 }
 
 
 const props = withDefaults(defineProps<PropsInterface>(), {
-    bigFileMark: '',
     maxTotal: 1,
     modelValue: () => {
         return [];
