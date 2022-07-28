@@ -8,20 +8,15 @@
             <el-radio-button :label="4">近一个月</el-radio-button>
             <el-radio-button :label="5">自定义周期</el-radio-button>
         </el-radio-group>
-        <div style="display: inline-block;" v-show="dateState.selectVal == 5">
-            <el-date-picker
-                :model-value="dateState.selectDateArray"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                @update:model-value="changeDateRange"
-            ></el-date-picker>
+        <div class="filter-range-container" v-show="dateState.selectVal == 5">
+            <el-date-picker v-model="cancheDateRangeValue" type="daterange" range-separator="至" start-placeholder="开始日期"
+                @update:model-value="changeDateRange" end-placeholder="结束日期"></el-date-picker>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+import { DateModelType, ModelValueType } from 'element-plus';
 import { defineProps, defineEmits, ref, Ref, reactive } from 'vue';
 import dateManager from '../tool/dateManager';
 
@@ -29,13 +24,16 @@ interface DateStateInterface {
     startDate: string | number | Date | null,
     endDate: string | number | Date | null,
     selectVal: string | number | boolean,
-    selectDateArray: Array<string | number | Date>,
+    selectDateArray: Array<DateModelType>,
 };
 
 interface changeDateResultInterface {
     startDate: string | number | Date | null,
     endDate: string | number | Date | null,
 }
+
+const cancheDateRangeValue = ref('');
+
 
 let dateState = reactive(<DateStateInterface>{
     startDate: null,
@@ -48,7 +46,9 @@ const emit = defineEmits<{
     (e: 'changeDate', dateResult: changeDateResultInterface): void
 }>()
 
-const changeDateRange = (dateVals: Array<Date>) => {
+
+
+const changeDateRange = (dateVals: Date[]) => {
     dateState.selectDateArray = dateVals;
     dateState.startDate = dateVals[0];
     dateState.endDate = dateVals[1];
@@ -58,7 +58,7 @@ const changeDateRange = (dateVals: Array<Date>) => {
     });
 };
 
-const changeSelectDate = (selectVal: string | number| boolean) => {
+const changeSelectDate = (selectVal: string | number | boolean) => {
     dateState.selectVal = selectVal;
     if (selectVal == 5) {
         return;
@@ -93,3 +93,15 @@ const changeSelectDate = (selectVal: string | number| boolean) => {
 }
 
 </script>
+
+<style lang="less"  scoped>
+.date-filter {
+    position: relative;
+
+    .filter-range-container {
+        display: inline-block;
+        vertical-align: bottom;
+        margin-left: 20px;
+    }
+}
+</style>
