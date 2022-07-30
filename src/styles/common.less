@@ -20,9 +20,14 @@
         >label{
             display: inline-block;
             width: 70px;
+            vertical-align: middle;
+        }
+        >div{
+            vertical-align: middle;
         }
         .input-text{
             width: 200px;
+            vertical-align: middle;
         }
     }
 }
@@ -42,7 +47,7 @@
     margin-top: 15px;
 }
 
-.details-column {
+.detail-page-title {
     padding: 20px;
     margin: 10px;
     > h3 {
@@ -148,9 +153,6 @@
     padding: 25px 10px;
 }
 
-.save-btn {
-    font-size: 16px;
-}
 
 .upload-icon-box {
     width: 60px;
@@ -196,5 +198,18 @@
                 color: #ffffff;
             }
         }
+    }
+}
+
+.app-form-btn-container{
+    text-align: right;
+}
+
+.app-text-icon-inline{
+    display: flex;
+    justify-content: flex-end;
+    >span{
+        margin-right: 10px;
+        position: relative;
     }
 }
