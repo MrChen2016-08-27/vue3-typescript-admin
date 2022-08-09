@@ -16,7 +16,6 @@
 </template>
 
 <script lang="ts" setup>
-import { DateModelType, ModelValueType } from 'element-plus';
 import { defineProps, defineEmits, ref, Ref, reactive } from 'vue';
 import dateManager from '../tool/dateManager';
 
@@ -24,7 +23,7 @@ interface DateStateInterface {
     startDate: string | number | Date | null,
     endDate: string | number | Date | null,
     selectVal: string | number | boolean,
-    selectDateArray: Array<DateModelType>,
+    selectDateArray: Array<Date>,
 };
 
 interface changeDateResultInterface {
@@ -92,6 +91,26 @@ const changeSelectDate = (selectVal: string | number | boolean) => {
     });
 }
 
+// 重置参数
+function resetDateFilter() {
+    dateState.startDate = null;
+    dateState.endDate = null;
+    dateState.selectVal = '';
+    dateState.selectDateArray = [];
+}
+
+defineExpose({
+    resetDateFilter
+});
+
+
+
+</script>
+
+<script lang="ts">
+export interface DateFilterRefInterface {
+    resetDateFilter: () => void
+}
 </script>
 
 <style lang="less"  scoped>

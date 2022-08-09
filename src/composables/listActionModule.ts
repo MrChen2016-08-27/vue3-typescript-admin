@@ -17,6 +17,10 @@ function fileterNullParams(params: ListParamsStandard) {
     }
 }
 
+export const getTableIndexMethod = (index: number) => {
+    return index + 1;
+};
+
 // 列表操作模块
 export default function listActionModule(
     requesstMethods: (
@@ -78,6 +82,11 @@ export default function listActionModule(
         for (let key in listData.params) {
             if (!filterParams || !filterParams[key]) {
                 listData.params[key] = null;
+            }
+        }
+        for (let key in extraParameter) {
+            if (!filterParams || !filterParams[key]) {
+                extraParameter[key] = null;
             }
         }
         listData.params.pageNumber = 1;
