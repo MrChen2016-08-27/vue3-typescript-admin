@@ -75,7 +75,7 @@ export default {
     },
     getQueryStartDate(value: any) {
         if (value) {
-            return moment(value).startOf("day").toDate().getTime();
+            return moment(value).startOf("day").toDate();
             //new Date(moment(value).format("YYYY-MM-DD") + " 00:00:00").getTime();
         } else {
             return null;
@@ -84,7 +84,7 @@ export default {
 
     getQueryEndDate(value: any) {
         if (value) {
-            return moment(value).endOf("day").toDate().getTime();
+            return moment(value).endOf("day").toDate();
             //new Date(moment(value).format("YYYY-MM-DD") + " 00:00:00").getTime();
         } else {
             return null;
