@@ -12,6 +12,13 @@
                     </el-input>
                 </el-form-item>
             </el-col>
+            <el-col v-else :span="6" prop="password">
+                <el-form-item label="重设密码">
+                    <el-input show-password :readonly="isReadonly" v-model="userState.form.password"
+                        placeholder="不需要重设则请勿填写">
+                    </el-input>
+                </el-form-item>
+            </el-col>
             <el-col :span="6">
                 <el-form-item label="姓名">
                     <el-input :readonly="isReadonly" v-model="userState.form.name"></el-input>
@@ -19,7 +26,8 @@
             </el-col>
             <el-col :span="6">
                 <el-form-item prop="orgId" label="组织架构">
-                    <el-input :readonly="true" v-model="userState.form.orgName" @click="orgState.orgVisible = true;" ></el-input>
+                    <el-input :readonly="true" v-model="userState.form.orgName" @click="orgState.orgVisible = true;">
+                    </el-input>
                 </el-form-item>
             </el-col>
             <el-col :span="6">
@@ -75,7 +83,7 @@ import { OrgInterface } from "@/components/SelectOrgTree.vue";
 const router = useRouter();
 const route = useRoute();
 
-const {orgState, submitSelectOrg} = orgService();
+const { orgState, submitSelectOrg } = orgService();
 
 function orgService() {
     const orgState = reactive({
@@ -150,20 +158,20 @@ function userService() {
                     message: "请输入用户名",
                     trigger: "blur",
                 },
-                {
-                    min: 2,
-                    max: 12,
-                    message: "用户名长度必须在2~12位以内",
-                    trigger: "blur",
-                },
+                // {
+                //     min: 2,
+                //     max: 12,
+                //     message: "用户名长度必须在2~12位以内",
+                //     trigger: "blur",
+                // },
             ],
-            orgId: [
-                {
-                    required: true,
-                    message: "请输入用户名",
-                    trigger: "blur",
-                }
-            ]
+            // orgId: [
+            //     {
+            //         required: true,
+            //         message: "请选择组织架构",
+            //         trigger: "blur",
+            //     }
+            // ]
         };
         if (!props.id) {
             result.password = [
@@ -242,4 +250,5 @@ const props = defineProps<PropsInterface>();
 </script>
 
 <style lang="less" scoped>
+
 </style>

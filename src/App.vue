@@ -1,5 +1,5 @@
 <template>
-  <router-view/>
+  <router-view />
 </template>
 
 <script setup lang="ts">
@@ -12,20 +12,25 @@ import HelloWorld from '@/components/HelloWorld.vue'
 </script>
 
 <style>
-
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-html, body{
+
+html,
+body {
   height: 100%;
 }
-html, body, #app{
+
+html,
+body,
+#app {
   min-width: 1200px;
   min-height: 100%;
   position: relative;
 }
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -33,9 +38,12 @@ html, body, #app{
   color: #333333;
   height: 100%;
 }
-
 </style>
 
 <style lang="less">
 @import url('./styles/common.less');
+@import url('./styles/index.less');
+// font awesome
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
 </style>
