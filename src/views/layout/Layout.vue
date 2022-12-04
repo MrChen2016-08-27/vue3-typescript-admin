@@ -41,6 +41,13 @@
                 </div>
             </el-header>
             <el-main>
+
+                <el-tabs :model-value="computeds.getNowPath.value" type="card" class="demo-tabs" closable
+                    @tab-click="(pane) => methods.goTabRouter(pane)" @tab-remove="methods.removeRouterCard">
+                    <el-tab-pane v-for="historyRecordItem in getHistoryRoutes" :key="historyRecordItem.path"
+                        :label="historyRecordItem.title" :name="historyRecordItem.path">
+                    </el-tab-pane>
+                </el-tabs>
                 <router-view></router-view>
             </el-main>
         </el-container>
@@ -49,16 +56,19 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
 
 import userApi from "@/api/user";
 
-import { Getter, Actions } from '../../store/app'
+import { Getter, Actions, Mutations, HistoryRouterItem } from '../../store/app'
 import { Getter as UserGetter } from '../../store/user';
+import { toPairs } from 'lodash-es';
+import { TabsPaneContext } from 'element-plus';
 
 
 const getUserName = UserGetter.getUserName.value;
 const leftMenuList = Getter.getLeftMenuList.value;
+const getHistoryRoutes = Getter.getHistoryRoutes.value;
 
 const route = useRoute();
 const router = useRouter();
@@ -87,8 +97,6 @@ const computeds = {
         let info = route.matched.find((item) => {
             return item.meta.menuKey;
         });
-        console.log('route.matched', route.matched);
-        console.log('route.meta', route.meta);
         if (info) {
             return info.meta.menuKey as string;
         }
@@ -99,12 +107,46 @@ const computeds = {
 
 
         return route.name!.toString().split("/");
+    }),
+    getHistoryTabRecords: computed(() => {
+        let records = router.getRoutes();
+        return records;
+    }),
+    getNowPath: computed(() => {
+        let nowRoutePath = route.path;
+        return nowRoutePath;
     })
 }
+
+onBeforeRouteUpdate((to, form) => {
+    // 添加新路由记录tab
+    let historyTitle: string = to.meta.historyTitle as string || '新标签页';
+    let exist = getHistoryRoutes.find((recordItem) => {
+        return recordItem.path == to.path;
+    })
+    if (!exist) {
+        // 如果不存在
+        Mutations.addHistoryRoutersItem({
+            title: historyTitle,
+            path: to.path,
+            query: to.query,
+            params: to.params,
+            time: Date.now()
+        });
+    }
+});
 
 const methods = {
     goMenuRouter(routeName: string) {
         router.push({ name: routeName });
+    },
+    goTabRouter(tabPItem: TabsPaneContext) {
+        console.log('tabPItem', tabPItem);
+        let historyItem = getHistoryRoutes[tabPItem.index! as unknown as number];
+        router.push({ path: historyItem.path, params: historyItem.params, query: historyItem.query });
+    },
+    removeRouterCard(targetName: string) {
+        Mutations.removeHistoryRouterItem(targetName);
     },
     async logout() {
         const res = await userApi.logout();
@@ -164,11 +206,12 @@ const methods = {
 
 .layout-right-menu-header {
     display: flex;
- 
+
     align-items: center;
     color: #333333;
     cursor: default;
-    >div{
+
+    >div {
         display: flex;
         align-items: center;
         position: relative;
