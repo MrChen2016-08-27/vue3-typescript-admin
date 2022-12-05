@@ -52,10 +52,7 @@
         </el-row>
     </el-form>
     <div class="page-action-footer">
-        <el-button v-if="!isReadonly" @click="submitForm()" type="primary">确认</el-button>
-        <el-button @click="$back()">{{
-                isReadonly ? "返回" : "取消"
-        }}</el-button>
+        <el-button v-if="!isReadonly" :loading="formActionState.loading" @click="submitForm()" type="primary">确认</el-button>
     </div>
     <SelectOrgModalVue v-model="orgState.orgVisible" @submit-org="submitSelectOrg"></SelectOrgModalVue>
 </template>
@@ -73,15 +70,18 @@ import {
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fromJS } from "immutable";
-import { ElForm as ElementUIForm } from "element-plus";
+import { ElForm as ElementUIForm, ElNotification } from "element-plus";
 import UploadFile from "@/components/UploadFile.vue";
 import SelectOrgModalVue from "@/components/SelectOrgModal.vue";
 import { OrgInterface } from "@/components/SelectOrgTree.vue";
+import { submitService } from "@/composables/formModule";
 
 
 
 const router = useRouter();
 const route = useRoute();
+
+let { submitAction, formActionState } = submitService();
 
 const { orgState, submitSelectOrg } = orgService();
 
@@ -191,21 +191,28 @@ function userService() {
     });
     // 提交用户信息表单
     async function submitForm() {
-        let form: any = fromJS(state.form).toJS();
-        form.roleIds = fromJS(roleState.roleIds).toJS();
-        if (state.imgList.length > 0) {
-            form.avatar = state.imgList[0];
-        }
-        let valid = await formRef.value?.validate();
-        if (!valid) {
-            return;
-        }
-        if (props.id) {
-            await userApi.updateUser(form);
-        } else {
-            await userApi.addUser(form);
-        }
-        router.push({ name: "System/UserList" });
+        await submitAction(async () => {
+            let form: any = fromJS(state.form).toJS();
+            form.roleIds = fromJS(roleState.roleIds).toJS();
+            if (state.imgList.length > 0) {
+                form.avatar = state.imgList[0];
+            }
+            let valid = await formRef.value?.validate();
+            if (!valid) {
+                return;
+            }
+            if (props.id) {
+                await userApi.updateUser(form);
+            } else {
+                await userApi.addUser(form);
+            }
+            ElNotification({
+                type: 'success',
+                title: '操作提示',
+                message: '保存成功'
+            });
+
+        })
     };
     return {
         getDetail,

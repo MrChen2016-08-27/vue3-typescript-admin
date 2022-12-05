@@ -41,14 +41,16 @@
                 </div>
             </el-header>
             <el-main>
-
-                <el-tabs :model-value="computeds.getNowPath.value" type="card" class="demo-tabs" closable
-                    @tab-click="(pane) => methods.goTabRouter(pane)" @tab-remove="methods.removeRouterCard">
-                    <el-tab-pane v-for="historyRecordItem in getHistoryRoutes" :key="historyRecordItem.path"
-                        :label="historyRecordItem.title" :name="historyRecordItem.path">
-                    </el-tab-pane>
-                </el-tabs>
-                <router-view></router-view>
+                <TabNavigatorBar></TabNavigatorBar>
+                <router-view v-slot="{ Component, route }">
+                    <Transition name="layout-tab" mode="out-in">
+                        <div>
+                            <KeepAlive>
+                                <component :is="Component"></component>
+                            </KeepAlive>
+                        </div>
+                    </Transition>
+                </router-view>
             </el-main>
         </el-container>
     </el-container>
@@ -57,7 +59,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
-
+import TabNavigatorBar from '@/components/TabNavigatorBar.vue';
 import userApi from "@/api/user";
 
 import { Getter, Actions, Mutations, HistoryRouterItem } from '../../store/app'
@@ -112,41 +114,32 @@ const computeds = {
         let records = router.getRoutes();
         return records;
     }),
-    getNowPath: computed(() => {
-        let nowRoutePath = route.path;
-        return nowRoutePath;
-    })
 }
 
-onBeforeRouteUpdate((to, form) => {
-    // 添加新路由记录tab
-    let historyTitle: string = to.meta.historyTitle as string || '新标签页';
-    let exist = getHistoryRoutes.find((recordItem) => {
-        return recordItem.path == to.path;
-    })
-    if (!exist) {
-        // 如果不存在
-        Mutations.addHistoryRoutersItem({
-            title: historyTitle,
-            path: to.path,
-            query: to.query,
-            params: to.params,
-            time: Date.now()
-        });
-    }
-});
+// onBeforeRouteUpdate((to, form) => {
+//     // 添加新路由记录tab
+//     let historyTitle: string = to.meta.historyTitle as string || '新标签页';
+//     let exist = getHistoryRoutes.find((recordItem) => {
+//         return recordItem.path == to.path;
+//     })
+//     if (!exist) {
+//         // 如果不存在
+//         Mutations.addHistoryRoutersItem({
+//             title: historyTitle,
+//             path: to.path,
+//             query: to.query,
+//             params: to.params,
+//             time: Date.now()
+//         });
+//     }
+// });
+
+
 
 const methods = {
+
     goMenuRouter(routeName: string) {
         router.push({ name: routeName });
-    },
-    goTabRouter(tabPItem: TabsPaneContext) {
-        console.log('tabPItem', tabPItem);
-        let historyItem = getHistoryRoutes[tabPItem.index! as unknown as number];
-        router.push({ path: historyItem.path, params: historyItem.params, query: historyItem.query });
-    },
-    removeRouterCard(targetName: string) {
-        Mutations.removeHistoryRouterItem(targetName);
     },
     async logout() {
         const res = await userApi.logout();
@@ -231,5 +224,20 @@ const methods = {
         background-color: #666666;
 
     }
+}
+</style>
+
+<style lang="less">
+.layout-tab-enter-active {
+    transition: all 0.3s ease;
+}
+
+.layout-tab-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.layout-tab-enter-from,
+.layout-tab-leave-to {
+    opacity: 0;
 }
 </style>

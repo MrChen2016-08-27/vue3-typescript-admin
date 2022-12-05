@@ -24,18 +24,19 @@ export default function listActionModule(
     ) => Promise<AxiosResponse<any>>,
     extraParameter?: object
 ): ListActionModuleStandard {
-    const baseParams: readonly ListParamsStandard = {
+    const baseParams: ListParamsStandard = {
         pageNumber: 1,
         pageSize: 10,
-        keyword: "",
+        keyword: "" as string | null,
     };
     const listData = reactive({
         loading: true,
         total: 0,
-        keyword: "",
+        keyword: "" as string | null,
         pageSize: <number[]>[10, 20, 30, 50],
         params: fromJS(baseParams).toJS() as ListParamsStandard,
         dataList: <any[]>[],
+        pageSizes: [10]
     });
 
     function updateParams() {

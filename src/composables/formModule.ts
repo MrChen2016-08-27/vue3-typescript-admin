@@ -1,26 +1,31 @@
 import { reactive } from "vue";
 import { fromJS } from "immutable";
 
-export default function () {
+export function submitService() {
     let formActionState = reactive({
         // 提交状态
         loading: false,
         // 节流
-        timer: null,
+        timer: null as NodeJS.Timeout | null,
     });
-    async function submitAction(callback) {
+    async function submitAction(callback: Function) {
         formActionState.loading = true;
-        clearTimeout(formActionState.timer);
+        if (formActionState.timer) {
+            clearTimeout(formActionState.timer);
+        }
+        // 防止快速的重复点击
         formActionState.timer = setTimeout(async () => {
             try {
                 await callback();
             } catch (e) {
                 console.log("submit action error:", e);
             } finally {
-                clearTimeout(formActionState.timer);
+                if (formActionState.timer) {
+                    clearTimeout(formActionState.timer);
+                }
                 formActionState.loading = false;
             }
-        }, 300);
+        }, 200);
     }
     return {
         formActionState,
@@ -41,7 +46,9 @@ export const deleteService = () => {
     });
 
     function viewDeleteAction(delRow: any) {
-        deleteServiceState.selectRow = fromJS(delRow).toJS();
+        deleteServiceState.deleteRow = fromJS(
+            delRow
+        ).toJS() as DeleteDataInterface;
         deleteServiceState.delShow = true;
     }
     return {

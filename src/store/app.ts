@@ -25,7 +25,7 @@ export const Getter = {
         return list;
     }),
     getHistoryRoutes: computed((): HistoryRouterItem[] => {
-        return state.historyRouters;
+        return fromJS(state.historyRouters).toJS() as HistoryRouterItem[];
     }),
 };
 
@@ -39,15 +39,14 @@ export const Mutations = {
         ).toJS() as unknown as HistoryRouterItem;
         state.historyRouters.push(newRecord);
     },
-    removeHistoryRouterItem: (path: string) => {
-        state.historyRouters.find((item, index) => {
-            console.log("item.path", item.path);
-            console.log("path", path);
-            if (item.path == path) {
-                state.historyRouters.splice(index, 1);
-                return true;
-            }
-        });
+    removeHistoryRouterItem: (index: number) => {
+        state.historyRouters.splice(index, 1);
+    },
+    setHistoryRouters: (newHistoryRoutes: HistoryRouterItem[]) => {
+        let newList = fromJS(
+            newHistoryRoutes
+        ).toJS() as unknown as HistoryRouterItem[];
+        state.historyRouters = newList;
     },
 };
 

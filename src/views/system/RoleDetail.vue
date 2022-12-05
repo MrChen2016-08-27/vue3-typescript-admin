@@ -29,14 +29,14 @@
                                 index3
                             )
                         " @change="
-                                (result: any) =>
-                                    methods.changeCheck(
-                                        item.id,
-                                        child.id,
-                                        index3,
-                                        result
-                                    )
-                            ">
+    (result: any) =>
+        methods.changeCheck(
+            item.id,
+            child.id,
+            index3,
+            result
+        )
+">
                             {{ opt }}
                         </el-checkbox>
                         <el-checkbox v-else :model-value="methods.parseIsCheckOut(0, index3)" @change="
@@ -56,10 +56,8 @@
         </el-card>
     </div>
     <div class="page-action-footer">
-        <el-button v-if="!computeds.isReadonly.value" type="primary" @click="methods.saveChange()">确认</el-button>
-        <el-button @click="$back()">
-            {{ computeds.isReadonly.value ? "返回" : "取消" }}
-        </el-button>
+        <el-button v-if="!computeds.isReadonly.value" type="primary" :loading="formActionState.loading"
+            @click="methods.saveChange()">确认</el-button>
     </div>
 </template>
 
@@ -69,9 +67,12 @@ import { reactive, onMounted, computed } from "vue";
 import { ElNotification } from "element-plus";
 
 import { useRouter, useRoute } from "vue-router";
+import { submitService } from "@/composables/formModule";
 
 const router = useRouter();
 const route = useRoute();
+
+let { submitAction, formActionState } = submitService();
 
 const state = reactive({
     options: ["新增", "删除", "编辑", "查看"],
@@ -162,16 +163,16 @@ const methods = {
         });
     },
     async saveChange() {
-        let form = {
-            id: route.params.id,
-            authority: state.authority,
-        };
-        await updateRole(form);
-        router.push({ name: "System/RoleList" });
-
-        ElNotification.success?.({
-            title: "保存成功",
-            duration: 2,
+        await submitAction(async () => {
+            let form = {
+                id: route.params.id,
+                authority: state.authority,
+            };
+            await updateRole(form);
+            ElNotification.success?.({
+                title: "保存成功",
+                duration: 2,
+            });
         });
     },
 };
