@@ -2,7 +2,7 @@
     <div class="auth-card-list">
         <el-card v-for="(item, index) in state.menus" :key="index" class="card">
             <template #header>
-                <div class="card-header flex-bet-container">
+                <div class="card-header app-flex-bet-container">
                     <span>{{ item.title }}</span>
                     <el-checkbox :model-value="
                         methods.parseIsColumnCheckOut(
