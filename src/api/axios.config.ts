@@ -33,6 +33,9 @@ axios.interceptors.response.use(
             ElNotification.error?.({
                 title: data.meta.message,
             });
+            if (data.meta.code == "auth_update_restart") {
+                router.replace({ name: "Login" });
+            }
             // 阻止继续传递
             throw Error(data.meta.message);
         }
@@ -49,7 +52,7 @@ axios.interceptors.response.use(
         if (error.response) {
             switch (error.response.status) {
                 case 401:
-                    router.replace("/login");
+                    router.replace({ name: "Login" });
                     errMsg = "request 401";
                     if (localStorage.getItem("token")) {
                         // 清除 token
