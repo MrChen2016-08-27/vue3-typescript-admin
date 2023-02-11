@@ -11,7 +11,7 @@
                 <el-form ref="orgFormRef" :model="selectOrgData" :rules="orgFormRule" label-width="120px">
                     <el-card>
                         <template #header>
-                            <div class="flex-bet-container">
+                            <div class="app-flex-bet-container">
                                 <label>组织架构信息</label>
                                 <div v-if="selectOrgData && selectOrgData.id">
                                     <el-button type="primary"

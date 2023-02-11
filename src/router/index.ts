@@ -7,7 +7,7 @@ import {
 } from "vue-router";
 import { Component } from "vue";
 import userApi from "@/api/user";
-import { Getter, Actions } from "@/store/app";
+import { Getter, Actions, Mutations } from "@/store/app";
 import { Actions as UserActions } from "@/store/user";
 
 import Layout from "@/views/layout/Layout.vue";
@@ -30,6 +30,28 @@ async function initAuthBaseData(
     await userApi.getAuth();
     await UserActions.getUserinitInfo();
     await Actions.filterLeftMenus();
+}
+
+async function beforeHistoryRecord(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized
+) {
+    const getHistoryRoutes = Getter.getHistoryRoutes.value;
+    // 添加新路由记录tab
+    let historyTitle: string = (to.meta.historyTitle as string) || "新标签页";
+    let exist = getHistoryRoutes.find((recordItem) => {
+        return recordItem.path == to.path;
+    });
+    if (!exist) {
+        // 如果不存在
+        Mutations.addHistoryRoutersItem({
+            title: historyTitle,
+            path: to.path,
+            query: to.query,
+            params: to.params,
+            time: Date.now(),
+        });
+    }
 }
 
 // home/index 如果存在权限菜单则默认跳转到菜单的第一个页面
@@ -77,6 +99,7 @@ interface RouterMenuChild {
 
 interface RouterChildMenuMeta {
     menuKey: string;
+    historyTitle: string;
     [key: string]: any;
 }
 
@@ -92,7 +115,7 @@ const otherRouter = [
                 path: "index",
                 name: "Home/Index",
                 component: Home,
-                beforeEnter: [homeboforeEnter],
+                beforeEnter: [homeboforeEnter, beforeHistoryRecord],
             },
         ],
     },
@@ -109,8 +132,10 @@ const otherRouter = [
                 component: UserDetail,
                 title: "用户管理",
                 props: true,
+                beforeEnter: [beforeHistoryRecord],
                 meta: {
                     menuKey: "User",
+                    historyTitle: "用户管理详情",
                 },
             },
             {
@@ -118,8 +143,10 @@ const otherRouter = [
                 name: "System/RoleDetail",
                 component: RoleDetail,
                 title: "角色权限管理",
+                beforeEnter: [beforeHistoryRecord],
                 meta: {
                     menuKey: "Role",
+                    historyTitle: "角色权限管理详情",
                 },
             },
         ],
@@ -143,8 +170,10 @@ export const appRouter = <RouterMenu[]>[
                 component: OrgList,
                 id: "2",
                 title: "组织架构",
+                beforeEnter: [beforeHistoryRecord],
                 meta: {
                     menuKey: "Org",
+                    historyTitle: "组织架构",
                 },
             },
             {
@@ -153,8 +182,10 @@ export const appRouter = <RouterMenu[]>[
                 component: RoleList,
                 id: "1",
                 title: "角色管理",
+                beforeEnter: [beforeHistoryRecord],
                 meta: {
                     menuKey: "Role",
+                    historyTitle: "角色管理",
                 },
             },
             {
@@ -162,9 +193,11 @@ export const appRouter = <RouterMenu[]>[
                 name: "System/UserList",
                 component: UserList,
                 title: "用户管理",
+                beforeEnter: [beforeHistoryRecord],
                 id: "3",
                 meta: {
                     menuKey: "User",
+                    historyTitle: "用户管理",
                 },
             },
         ],

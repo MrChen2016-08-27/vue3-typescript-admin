@@ -5,7 +5,6 @@
             <slot name="left-action" ></slot>
         </div>
         <div class="seach-header-bar">
-            {{ cacheKeyword }}
             <el-input class="input-text" :modelValue="getInputValue" @input="changeKeyword" @keyup.enter="emit('search', getInputValue)" ></el-input>
             <el-button @click="emit('search', getInputValue)" class="header-right-action-btn" circle type="primary" :icon="Search"></el-button>
             <el-button @click="resetAction()" class="header-right-action-btn" circle :icon="Refresh"></el-button>

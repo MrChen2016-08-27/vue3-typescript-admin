@@ -12,6 +12,13 @@
                     </el-input>
                 </el-form-item>
             </el-col>
+            <el-col v-else :span="6" prop="password">
+                <el-form-item label="重设密码">
+                    <el-input show-password :readonly="isReadonly" v-model="userState.form.password"
+                        placeholder="不需要重设则请勿填写">
+                    </el-input>
+                </el-form-item>
+            </el-col>
             <el-col :span="6">
                 <el-form-item label="姓名">
                     <el-input :readonly="isReadonly" v-model="userState.form.name"></el-input>
@@ -19,7 +26,8 @@
             </el-col>
             <el-col :span="6">
                 <el-form-item prop="orgId" label="组织架构">
-                    <el-input :readonly="true" v-model="userState.form.orgName" @click="orgState.orgVisible = true;" ></el-input>
+                    <el-input :readonly="true" v-model="userState.form.orgName" @click="orgState.orgVisible = true;">
+                    </el-input>
                 </el-form-item>
             </el-col>
             <el-col :span="6">
@@ -44,10 +52,7 @@
         </el-row>
     </el-form>
     <div class="page-action-footer">
-        <el-button v-if="!isReadonly" @click="submitForm()" type="primary">确认</el-button>
-        <el-button @click="$back()">{{
-                isReadonly ? "返回" : "取消"
-        }}</el-button>
+        <el-button v-if="!isReadonly" :loading="formActionState.loading" @click="submitForm()" type="primary">确认</el-button>
     </div>
     <SelectOrgModalVue v-model="orgState.orgVisible" @submit-org="submitSelectOrg"></SelectOrgModalVue>
 </template>
@@ -65,17 +70,20 @@ import {
 } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { fromJS } from "immutable";
-import { ElForm as ElementUIForm } from "element-plus";
+import { ElForm as ElementUIForm, ElNotification } from "element-plus";
 import UploadFile from "@/components/UploadFile.vue";
 import SelectOrgModalVue from "@/components/SelectOrgModal.vue";
 import { OrgInterface } from "@/components/SelectOrgTree.vue";
+import { submitService } from "@/composables/formModule";
 
 
 
 const router = useRouter();
 const route = useRoute();
 
-const {orgState, submitSelectOrg} = orgService();
+let { submitAction, formActionState } = submitService();
+
+const { orgState, submitSelectOrg } = orgService();
 
 function orgService() {
     const orgState = reactive({
@@ -150,20 +158,20 @@ function userService() {
                     message: "请输入用户名",
                     trigger: "blur",
                 },
-                {
-                    min: 2,
-                    max: 12,
-                    message: "用户名长度必须在2~12位以内",
-                    trigger: "blur",
-                },
+                // {
+                //     min: 2,
+                //     max: 12,
+                //     message: "用户名长度必须在2~12位以内",
+                //     trigger: "blur",
+                // },
             ],
-            orgId: [
-                {
-                    required: true,
-                    message: "请输入用户名",
-                    trigger: "blur",
-                }
-            ]
+            // orgId: [
+            //     {
+            //         required: true,
+            //         message: "请选择组织架构",
+            //         trigger: "blur",
+            //     }
+            // ]
         };
         if (!props.id) {
             result.password = [
@@ -183,21 +191,28 @@ function userService() {
     });
     // 提交用户信息表单
     async function submitForm() {
-        let form: any = fromJS(state.form).toJS();
-        form.roleIds = fromJS(roleState.roleIds).toJS();
-        if (state.imgList.length > 0) {
-            form.avatar = state.imgList[0];
-        }
-        let valid = await formRef.value?.validate();
-        if (!valid) {
-            return;
-        }
-        if (props.id) {
-            await userApi.updateUser(form);
-        } else {
-            await userApi.addUser(form);
-        }
-        router.push({ name: "System/UserList" });
+        await submitAction(async () => {
+            let form: any = fromJS(state.form).toJS();
+            form.roleIds = fromJS(roleState.roleIds).toJS();
+            if (state.imgList.length > 0) {
+                form.avatar = state.imgList[0];
+            }
+            let valid = await formRef.value?.validate();
+            if (!valid) {
+                return;
+            }
+            if (props.id) {
+                await userApi.updateUser(form);
+            } else {
+                await userApi.addUser(form);
+            }
+            ElNotification({
+                type: 'success',
+                title: '操作提示',
+                message: '保存成功'
+            });
+
+        })
     };
     return {
         getDetail,
@@ -242,4 +257,5 @@ const props = defineProps<PropsInterface>();
 </script>
 
 <style lang="less" scoped>
+
 </style>

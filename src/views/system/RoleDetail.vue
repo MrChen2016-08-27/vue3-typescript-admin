@@ -2,63 +2,52 @@
     <div class="auth-card-list">
         <el-card v-for="(item, index) in state.menus" :key="index" class="card">
             <template #header>
-                <div class="card-header flex-bet-container">
+                <div class="card-header app-flex-bet-container">
                     <span>{{ item.title }}</span>
-                    <el-checkbox
-                        :model-value="
-                            methods.parseIsColumnCheckOut(
-                                state.authority[item.id],
-                                item.children
-                            )
-                        "
-                        @change="
-                        (result: any) =>
-                            methods.changeColumnCheck(
-                                item.id,
-                                result,
-                                item.children
-                            )
-                        "
-                    >全选</el-checkbox>
+                    <el-checkbox :model-value="
+                        methods.parseIsColumnCheckOut(
+                            state.authority[item.id],
+                            item.children
+                        )
+                    " @change="
+    (result: any) =>
+        methods.changeColumnCheck(
+            item.id,
+            result,
+            item.children
+        )
+">全选</el-checkbox>
                 </div>
             </template>
             <div v-for="(child, index2) in item.children" :key="index2" class="text item">
                 <div class="column-row">
                     <label class="column-row-label">{{ child.title }}</label>
                     <template v-for="(opt, index3) in state.options" :key="index3">
-                        <el-checkbox
-                            v-if="state.authority[item.id]"
-                            :model-value="
-                                methods.parseIsCheckOut(
-                                    state.authority[item.id][child.id],
-                                    index3
-                                )
-                            "
-                            @change="
-                                (result: any) =>
-                                    methods.changeCheck(
-                                        item.id,
-                                        child.id,
-                                        index3,
-                                        result
-                                    )
-                            "
-                        >
+                        <el-checkbox v-if="state.authority[item.id]" :model-value="
+                            methods.parseIsCheckOut(
+                                state.authority[item.id][child.id],
+                                index3
+                            )
+                        " @change="
+    (result: any) =>
+        methods.changeCheck(
+            item.id,
+            child.id,
+            index3,
+            result
+        )
+">
                             {{ opt }}
                         </el-checkbox>
-                        <el-checkbox
-                            v-else
-                            :model-value="methods.parseIsCheckOut(0, index3)"
-                            @change="
-                                (result: any) =>
-                                    methods.changeCheck(
-                                        item.id,
-                                        child.id,
-                                        index3,
-                                        result
-                                    )
-                            "
-                        >
+                        <el-checkbox v-else :model-value="methods.parseIsCheckOut(0, index3)" @change="
+                            (result: any) =>
+                                methods.changeCheck(
+                                    item.id,
+                                    child.id,
+                                    index3,
+                                    result
+                                )
+                        ">
                             {{ opt }}
                         </el-checkbox>
                     </template>
@@ -67,12 +56,8 @@
         </el-card>
     </div>
     <div class="page-action-footer">
-        <el-button v-if="!computeds.isReadonly.value" type="primary">确认</el-button>
-        <el-button @click="$back()">
-            {{
-                computeds.isReadonly.value ? "返回" : "取消"
-            }}
-        </el-button>
+        <el-button v-if="!computeds.isReadonly.value" type="primary" :loading="formActionState.loading"
+            @click="methods.saveChange()">确认</el-button>
     </div>
 </template>
 
@@ -82,9 +67,12 @@ import { reactive, onMounted, computed } from "vue";
 import { ElNotification } from "element-plus";
 
 import { useRouter, useRoute } from "vue-router";
+import { submitService } from "@/composables/formModule";
 
 const router = useRouter();
 const route = useRoute();
+
+let { submitAction, formActionState } = submitService();
 
 const state = reactive({
     options: ["新增", "删除", "编辑", "查看"],
@@ -153,7 +141,7 @@ const methods = {
             return false;
         }
         menuList.forEach((menu: any) => {
-            if (authObj[menu.id] != computeds.getRowMax) {
+            if (authObj[menu.id] != computeds.getRowMax.value) {
                 result = false;
                 return;
             }
@@ -169,22 +157,22 @@ const methods = {
         if (!state.authority[itemId]) {
             state.authority[itemId] = {};
         }
-        let value = result ? computeds.getRowMax : 0;
+        let value = result ? computeds.getRowMax.value : 0;
         menuList.forEach((menu) => {
             state.authority[itemId][menu.id] = value;
         });
     },
     async saveChange() {
-        let form = {
-            id: route.params.id,
-            authority: state.authority,
-        };
-        await updateRole(form);
-        router.push({ name: "System/RoleList" });
-
-        ElNotification.success?.({
-            title: "保存成功",
-            duration: 2,
+        await submitAction(async () => {
+            let form = {
+                id: route.params.id,
+                authority: state.authority,
+            };
+            await updateRole(form);
+            ElNotification.success?.({
+                title: "保存成功",
+                duration: 2,
+            });
         });
     },
 };
@@ -210,12 +198,15 @@ const computeds = {
 <style lang="less" scoped>
 .auth-card-list {
     display: flex;
+
     .card {
         flex: 0 0 430px;
         margin: 10px;
+
         .column-row {
             vertical-align: middle;
             margin: 5px 0;
+
             .column-row-label {
                 margin-right: 16px;
             }
